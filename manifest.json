@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Blogger Markdown",
   "version": "1.0",
-  "description": "Blogger Editor with Markdown support.",
+  "description": "Blogger Editor with Markdown support",
   "author": "Surakarn Samkaew <tonkla@gmail.com>",
   "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" },
   "permissions": ["http://www.blogger.com/"],
