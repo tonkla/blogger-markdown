@@ -1,16 +1,9 @@
-/*
-Thanks:
-- http://youmightnotneedjquery.com/
-- https://gist.github.com/nmsdvid/8807205
-- https://www.flaticon.com/free-icon/blogger_179312
-*/
-
 'use strict'
 
-let onLoadTimer
 let btnCompose
 let btnHtml
 let btnMarkdown
+let btnSave
 let editorComposeW
 let editorHtml
 let editorHtmlW
@@ -30,20 +23,30 @@ converter.setFlavor('github')
 const debounce = (a, b = 250, c) => (...d) =>
   clearTimeout(c, (c = setTimeout(a, b, ...d)))
 
+const savePost = debounce(() => {
+  if (btnSave && btnSave.innerText === 'Save') {
+    const event = document.createEvent('MouseEvents')
+    event.initEvent('click', true, false)
+    btnSave.dispatchEvent(event)
+  }
+}, 2000)
+
 const handleTextChanged = debounce(() => {
   editorHtml.value = converter.makeHtml(editorMarkdown.value)
+  savePost()
 }, 1000)
 
 function setElementRefs() {
   btnCompose = document.querySelectorAll('span.tabs span button')[0]
   btnHtml = document.querySelectorAll('span.tabs span button')[1]
+  btnSave = document.querySelectorAll('form button.blogg-button')[2]
   editorComposeW = document.querySelector('div.composeBoxWrapper')
   editorHtmlW = document.querySelector('div.htmlBoxWrapper')
   editorHtml = document.querySelector('#postingHtmlBox')
   toolbar = document.querySelector('span.tabs').nextElementSibling
 }
 
-function resetElementClasses() {
+function resetElementsBehavior() {
   btnCompose.classList.remove('selected')
 
   btnHtml.classList.add('blogg-collapse-right')
@@ -54,9 +57,7 @@ function resetElementClasses() {
 
   toolbar.parentNode.style.display = 'flex'
   toolbar.style.display = 'none'
-}
 
-function resetElementEventListeners() {
   btnCompose.addEventListener('click', e => {
     btnHtml.classList.remove('selected')
     btnMarkdown.classList.remove('selected')
@@ -96,7 +97,7 @@ function resetElementEventListeners() {
   })
 }
 
-function createMdButton() {
+function createMarkdownButton() {
   const btn = document.createElement('button')
   btn.className = 'blogg-button blogg-collapse-left btn-markdown selected'
   btn.innerText = 'Markdown'
@@ -106,7 +107,7 @@ function createMdButton() {
   btnMarkdown = document.querySelectorAll('span.tabs span button')[2]
 }
 
-function createMdEditor() {
+function createMarkdownEditor() {
   const ed = document.createElement('div')
   ed.className = 'markdownBoxWrapper'
   Object.assign(ed.style, {
@@ -144,7 +145,7 @@ function createMdEditor() {
   editorMarkdown.addEventListener('keyup', handleTextChanged, false)
 }
 
-function initMdText() {
+function initMarkdownText() {
   const callback = (mRecord, mObserver) => {
     const [
       {
@@ -152,9 +153,10 @@ function initMdText() {
       },
     ] = mRecord
     editorMarkdownW.style.height = `${document.querySelector('.editorHolder')
-      .offsetHeight - 20}px`
+      .offsetHeight - 30}px`
     editorMarkdown.value = converter.makeMarkdown(value)
     editorMarkdown.focus()
+    editorMarkdown.selectionEnd = -1
   }
   const config = { attributes: true, childList: false, subtree: false }
   const observer = new MutationObserver(callback)
@@ -162,14 +164,11 @@ function initMdText() {
 }
 
 function start() {
-  clearInterval(onLoadTimer)
-
   setElementRefs()
-  createMdButton()
-  createMdEditor()
-  resetElementClasses()
-  resetElementEventListeners()
-  initMdText()
+  createMarkdownButton()
+  createMarkdownEditor()
+  resetElementsBehavior()
+  initMarkdownText()
 }
 
 ;(function() {
@@ -181,9 +180,15 @@ function start() {
         'https://fonts.googleapis.com/css?family=Sarabun:400&display=swap'
       document.head.prepend(link)
 
-      onLoadTimer = setInterval(() => {
-        if (document.querySelector('span.tabs')) start()
-      }, 100)
+      const callback = (mRecord, mObserver) => {
+        if (document.querySelector('#postingHtmlBox')) {
+          start()
+          mObserver.disconnect()
+        }
+      }
+      const config = { attributes: false, childList: true, subtree: false }
+      const observer = new MutationObserver(callback)
+      observer.observe(document.body, config)
     }
   })
 })()
