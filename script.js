@@ -10,6 +10,8 @@ let editorHtmlW
 let editorMarkdown
 let editorMarkdownW
 let toolbar
+let syncDuration = 1000
+let saveDuration = 2000
 
 const options = {
   noHeaderId: true,
@@ -29,17 +31,24 @@ const savePost = debounce(() => {
     event.initEvent('click', true, false)
     btnSave.dispatchEvent(event)
   }
-}, 2000)
+}, saveDuration)
 
 const handleMarkdownChanged = debounce(() => {
   editorHtml.value = converter.makeHtml(editorMarkdown.value)
   savePost()
-}, 1000)
+}, syncDuration)
 
 const handleHtmlChanged = debounce(() => {
   editorMarkdown.value = converter.makeMarkdown(editorHtml.value)
   savePost()
-}, 1000)
+}, syncDuration)
+
+function loadGoogleFont(font) {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = `https://fonts.googleapis.com/css?family=${font}&display=swap`
+  document.head.prepend(link)
+}
 
 function setElementRefs() {
   btnCompose = document.querySelectorAll('span.tabs span button')[0]
@@ -112,7 +121,7 @@ function createMarkdownButton() {
   btnMarkdown = document.querySelectorAll('span.tabs span button')[2]
 }
 
-function createMarkdownEditor() {
+function createMarkdownEditor({ vfont, vcss }) {
   const ed = document.createElement('div')
   ed.className = 'markdownBoxWrapper'
   Object.assign(ed.style, {
@@ -126,16 +135,12 @@ function createMarkdownEditor() {
 
   const et = document.createElement('textarea')
   et.innerText = ''
-  Object.assign(et.style, {
-    width: '100%',
-    padding: '50px 100px',
-    border: 'none',
-    color: '#333',
-    fontFamily: 'Sarabun',
-    fontSize: '18px',
-    lineHeight: '1.65em',
-    letterSpacing: '0.015em',
-  })
+  const f = vfont.split(':')
+  const fontFamily = f[0] || 'Sarabun'
+  const fontWeight = f[1] || 400
+  et.style.fontFamily = `\'${fontFamily.replace(/\+/g, ' ')}\'`
+  et.style.fontWeight = fontWeight
+  et.style.cssText += 'border: none; width: 100%; ' + vcss
 
   editorMarkdownW = document.querySelector('div.markdownBoxWrapper')
   editorMarkdownW.appendChild(et)
@@ -170,22 +175,26 @@ function initMarkdownText() {
 }
 
 function start() {
-  setElementRefs()
-  createMarkdownButton()
-  createMarkdownEditor()
-  resetElementsBehavior()
-  initMarkdownText()
+  chrome.storage.sync.get('settings', ({ settings }) => {
+    loadGoogleFont(settings.vfont)
+    setElementRefs()
+    createMarkdownButton()
+    createMarkdownEditor(settings)
+    resetElementsBehavior()
+    initMarkdownText()
+
+    syncDuration = !isNaN(parseInt(settings.vsync))
+      ? parseInt(settings.vsync)
+      : syncDuration
+    saveDuration = !isNaN(parseInt(settings.vsave))
+      ? parseInt(settings.vsave)
+      : saveDuration
+  })
 }
 
 ;(function() {
   document.addEventListener('readystatechange', event => {
     if (event.target.readyState === 'complete') {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href =
-        'https://fonts.googleapis.com/css?family=Sarabun:400&display=swap'
-      document.head.prepend(link)
-
       const callback = (mRecord, mObserver) => {
         if (document.querySelector('#postingHtmlBox')) {
           start()

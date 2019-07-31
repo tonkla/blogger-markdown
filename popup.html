@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        padding: 10px;
+        font-size: 14px;
+        font-family: sans-serif;
+        color: #333;
+      }
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .row:last-child {
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        width: 160px;
+        padding: 5px;
+        border: 1px solid #e0e0e0;
+        border-radius: 3px;
+        font-size: 14px;
+        font-family: sans-serif;
+        color: #333;
+      }
+      textarea {
+        resize: vertical;
+      }
+      label {
+        width: 100px;
+        text-align: right;
+        margin-right: 10px;
+      }
+      button {
+        display: inline-block;
+        text-align: center;
+        padding: 5px 10px;
+        margin: 0;
+        text-decoration: none;
+        color: #333;
+        font-family: sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+        border-radius: 3px;
+      }
+      button:hover,
+      button:focus {
+        background-color: #dcdcdc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="row">
+        <label>Google Font:</label>
+        <input id="elfont" type="text" placeholder="Crimson+Pro:400" />
+      </div>
+      <div class="row">
+        <label>Custom CSS:</label>
+        <textarea id="elcss" rows="6"></textarea>
+      </div>
+      <div class="row">
+        <label>Sync HTML:</label>
+        <input id="elsync" type="text" placeholder="after keyup in ms" />
+      </div>
+      <div class="row">
+        <label>Save Post:</label>
+        <input id="elsave" type="text" placeholder="after keyup in ms" />
+      </div>
+      <div class="row">
+        <label></label>
+        <button id="btnsave">Save</button>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
