@@ -31,8 +31,13 @@ const savePost = debounce(() => {
   }
 }, 2000)
 
-const handleTextChanged = debounce(() => {
+const handleMarkdownChanged = debounce(() => {
   editorHtml.value = converter.makeHtml(editorMarkdown.value)
+  savePost()
+}, 1000)
+
+const handleHtmlChanged = debounce(() => {
+  editorMarkdown.value = converter.makeMarkdown(editorHtml.value)
   savePost()
 }, 1000)
 
@@ -63,7 +68,7 @@ function resetElementsBehavior() {
     btnMarkdown.classList.remove('selected')
     btnCompose.classList.add('selected')
 
-    toolbar.style.display = ''
+    toolbar.style.display = 'flex'
 
     editorComposeW.style.display = ''
     editorHtmlW.style.display = 'none'
@@ -75,7 +80,7 @@ function resetElementsBehavior() {
     btnMarkdown.classList.remove('selected')
     btnHtml.classList.add('selected')
 
-    toolbar.style.display = ''
+    toolbar.style.display = 'flex'
 
     editorHtmlW.style.display = ''
     editorComposeW.style.display = 'none'
@@ -142,7 +147,8 @@ function createMarkdownEditor() {
     btnHtml.classList.remove('selected')
   })
 
-  editorMarkdown.addEventListener('keyup', handleTextChanged, false)
+  editorMarkdown.addEventListener('keyup', handleMarkdownChanged, false)
+  editorHtml.addEventListener('keyup', handleHtmlChanged, false)
 }
 
 function initMarkdownText() {
