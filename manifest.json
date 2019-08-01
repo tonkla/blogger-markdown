@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Blogger Markdown",
   "version": "1.0",
-  "description": "Blogger Editor with Markdown support",
+  "description": "It adds Markdown syntax support on the Blogger editor with customizable editor's appearance.",
   "author": "Surakarn Samkaew <tonkla@gmail.com>",
   "icons": {
     "16": "images/icon16.png",
