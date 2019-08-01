@@ -9,7 +9,12 @@
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
-  "permissions": ["https://www.blogger.com/", "declarativeContent", "storage"],
+  "permissions": [
+    "https://www.blogger.com/",
+    "declarativeContent",
+    "storage",
+    "tabs"
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.blogger.com/*"],

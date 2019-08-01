@@ -23,13 +23,21 @@
       }
       input,
       textarea {
-        width: 160px;
+        outline: 0;
+        width: 150px;
         padding: 5px;
-        border: 1px solid #e0e0e0;
-        border-radius: 3px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
         font-size: 14px;
-        font-family: sans-serif;
         color: #333;
+      }
+      input:hover,
+      textarea:hover {
+        border-color: #40a9ff;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: #096dd9;
       }
       textarea {
         resize: vertical;
@@ -41,20 +49,34 @@
       }
       button {
         display: inline-block;
-        text-align: center;
+        outline: 0;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
         padding: 5px 10px;
         margin: 0;
-        text-decoration: none;
-        color: #333;
-        font-family: sans-serif;
-        font-size: 14px;
         cursor: pointer;
-        border: 1px solid #e0e0e0;
-        border-radius: 3px;
+        user-select: none;
+        text-decoration: none;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
       }
       button:hover,
       button:focus {
-        background-color: #dcdcdc;
+        border-color: #40a9ff;
+        color: #40a9ff;
+      }
+      button:active {
+        border-color: #096dd9;
+        color: #096dd9;
+      }
+      span.btn-reset {
+        margin-left: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      span.btn-reset:hover {
+        color: #40a9ff;
       }
     </style>
   </head>
@@ -65,20 +87,25 @@
         <input id="elfont" type="text" placeholder="Crimson+Pro:400" />
       </div>
       <div class="row">
-        <label>Custom CSS:</label>
-        <textarea id="elcss" rows="6"></textarea>
+        <label>Text CSS:</label>
+        <textarea id="eltextcss" rows="4"></textarea>
       </div>
       <div class="row">
-        <label>Sync HTML:</label>
+        <label>Layout CSS:</label>
+        <textarea id="ellayoutcss" rows="4"></textarea>
+      </div>
+      <div class="row">
+        <label>Sync Duration:</label>
         <input id="elsync" type="text" placeholder="after keyup in ms" />
       </div>
       <div class="row">
-        <label>Save Post:</label>
+        <label>Save Duration:</label>
         <input id="elsave" type="text" placeholder="after keyup in ms" />
       </div>
       <div class="row">
         <label></label>
         <button id="btnsave">Save</button>
+        <span id="btnreset" class="btn-reset">Reset</span>
       </div>
     </div>
     <script src="popup.js"></script>
