@@ -2,6 +2,8 @@
 
 Blogger Markdown is a Chromium-based browser extension that lets you write a post on [Blogger](https://blogger.com) with Markdown syntax.
 
+![screenshot](./ss.jpg "Blogger Markdown")
+
 ## Features
 
 * DOM manipulation with vanilla JavaScript, no third-party library. Thanks http://youmightnotneedjquery.com/.
@@ -11,7 +13,8 @@ Blogger Markdown is a Chromium-based browser extension that lets you write a pos
 
 ### Thanks
 
-- Icons: https://www.flaticon.com/free-icon/blogger_179312
-- DOM documentation, https://developer.mozilla.org/en-US/
-- Google
-- StackOverflow
+- [Icons](https://www.flaticon.com/free-icon/blogger_179312)
+- [DOM documentation](https://developer.mozilla.org/en-US/)
+- [Chrome extensions documentation](https://developer.chrome.com/extensions)
+- StackOverflow and the people
+- Our beloved big brother, Google
