@@ -10,8 +10,8 @@ let editorHtmlW
 let editorMarkdown
 let editorMarkdownW
 let toolbar
-let syncDuration = 1000
-let saveDuration = 2000
+let syncDuration = 1500
+let saveDuration = 3000
 
 const options = {
   noHeaderId: true,
@@ -25,25 +25,8 @@ converter.setFlavor('github')
 const debounce = (a, b = 250, c) => (...d) =>
   clearTimeout(c, (c = setTimeout(a, b, ...d)))
 
-const savePost = debounce(() => {
-  if (btnSave && btnSave.innerText === 'Save') {
-    const event = document.createEvent('MouseEvents')
-    event.initEvent('click', true, false)
-    btnSave.dispatchEvent(event)
-  }
-}, saveDuration)
-
-const handleMarkdownChanged = debounce(() => {
-  editorHtml.value = converter.makeHtml(editorMarkdown.value)
-  savePost()
-}, syncDuration)
-
-const handleHtmlChanged = debounce(() => {
-  editorMarkdown.value = converter.makeMarkdown(editorHtml.value)
-  savePost()
-}, syncDuration)
-
-function loadGoogleFont(font) {
+function loadGoogleFont(_font) {
+  const font = _font.trim().replace(/\s+/g, '+')
   const link = document.createElement('link')
   link.rel = 'stylesheet'
   link.href = `https://fonts.googleapis.com/css?family=${font}&display=swap`
@@ -58,6 +41,72 @@ function setElementRefs() {
   editorHtmlW = document.querySelector('div.htmlBoxWrapper')
   editorHtml = document.querySelector('#postingHtmlBox')
   toolbar = document.querySelector('span.tabs').nextElementSibling
+}
+
+function createMarkdownButton() {
+  const btn = document.createElement('button')
+  btn.className = 'blogg-button blogg-collapse-left btn-markdown selected'
+  btn.innerText = 'Markdown'
+
+  btnHtml.insertAdjacentHTML('afterend', btn.outerHTML)
+
+  btnMarkdown = document.querySelectorAll('span.tabs button')[2]
+}
+
+function createMarkdownEditor(settings) {
+  const ed = document.createElement('div')
+  ed.className = 'markdownBoxWrapper'
+  Object.assign(ed.style, {
+    display: 'flex',
+    justifyContent: 'center',
+    height: '70vh',
+    margin: '10px',
+    flex: 1,
+  })
+
+  editorComposeW.insertAdjacentHTML('afterend', ed.outerHTML)
+
+  const et = document.createElement('textarea')
+  et.innerText = ''
+  const f = settings.vfont.split(':')
+  const fontFamily = f[0] || 'Sarabun'
+  const fontWeight = f[1] || 400
+  et.style.fontFamily = fontFamily.replace(/\+/g, ' ')
+  et.style.fontWeight = fontWeight
+  et.style.cssText += settings.vlayoutcss + ' ' + settings.vtextcss
+
+  editorMarkdownW = document.querySelector('div.markdownBoxWrapper')
+  editorMarkdownW.appendChild(et)
+
+  editorMarkdown = document.querySelector('div.markdownBoxWrapper textarea')
+  editorMarkdown.addEventListener('focus', e => {
+    e.target.style.outline = 'none'
+    btnCompose.classList.remove('selected')
+    btnHtml.classList.remove('selected')
+  })
+}
+
+function setDebouncedEvents() {
+  const savePost = debounce(() => {
+    if (btnSave && btnSave.innerText === 'Save') {
+      const event = document.createEvent('MouseEvents')
+      event.initEvent('click', true, false)
+      btnSave.dispatchEvent(event)
+    }
+  }, saveDuration)
+
+  const handleMarkdownChanged = debounce(() => {
+    editorHtml.value = converter.makeHtml(editorMarkdown.value)
+    savePost()
+  }, syncDuration)
+
+  const handleHtmlChanged = debounce(() => {
+    editorMarkdown.value = converter.makeMarkdown(editorHtml.value)
+    savePost()
+  }, syncDuration)
+
+  editorMarkdown.addEventListener('keyup', handleMarkdownChanged, false)
+  editorHtml.addEventListener('keyup', handleHtmlChanged, false)
 }
 
 function resetElementsBehavior() {
@@ -111,51 +160,6 @@ function resetElementsBehavior() {
   })
 }
 
-function createMarkdownButton() {
-  const btn = document.createElement('button')
-  btn.className = 'blogg-button blogg-collapse-left btn-markdown selected'
-  btn.innerText = 'Markdown'
-
-  btnHtml.insertAdjacentHTML('afterend', btn.outerHTML)
-
-  btnMarkdown = document.querySelectorAll('span.tabs span button')[2]
-}
-
-function createMarkdownEditor({ vfont, vcss }) {
-  const ed = document.createElement('div')
-  ed.className = 'markdownBoxWrapper'
-  Object.assign(ed.style, {
-    display: 'flex',
-    height: '70vh',
-    margin: '10px',
-    flex: 1,
-  })
-
-  editorComposeW.insertAdjacentHTML('afterend', ed.outerHTML)
-
-  const et = document.createElement('textarea')
-  et.innerText = ''
-  const f = vfont.split(':')
-  const fontFamily = f[0] || 'Sarabun'
-  const fontWeight = f[1] || 400
-  et.style.fontFamily = `\'${fontFamily.replace(/\+/g, ' ')}\'`
-  et.style.fontWeight = fontWeight
-  et.style.cssText += 'border: none; width: 100%; ' + vcss
-
-  editorMarkdownW = document.querySelector('div.markdownBoxWrapper')
-  editorMarkdownW.appendChild(et)
-
-  editorMarkdown = document.querySelector('div.markdownBoxWrapper textarea')
-  editorMarkdown.addEventListener('focus', e => {
-    e.target.style.outline = 'none'
-    btnCompose.classList.remove('selected')
-    btnHtml.classList.remove('selected')
-  })
-
-  editorMarkdown.addEventListener('keyup', handleMarkdownChanged, false)
-  editorHtml.addEventListener('keyup', handleHtmlChanged, false)
-}
-
 function initMarkdownText() {
   const callback = (mRecord, mObserver) => {
     const [
@@ -164,10 +168,9 @@ function initMarkdownText() {
       },
     ] = mRecord
     editorMarkdownW.style.height = `${document.querySelector('.editorHolder')
-      .offsetHeight - 30}px`
+      .offsetHeight - 50}px`
     editorMarkdown.value = converter.makeMarkdown(value)
     editorMarkdown.focus()
-    editorMarkdown.selectionEnd = -1
   }
   const config = { attributes: true, childList: false, subtree: false }
   const observer = new MutationObserver(callback)
@@ -175,20 +178,17 @@ function initMarkdownText() {
 }
 
 function start() {
-  chrome.storage.sync.get('settings', ({ settings }) => {
-    loadGoogleFont(settings.vfont)
+  chrome.storage.sync.get('settings', ({ settings: s }) => {
+    if (!isNaN(parseInt(s.vsync))) syncDuration = parseInt(s.vsync)
+    if (!isNaN(parseInt(s.vsave))) saveDuration = parseInt(s.vsave)
+
+    loadGoogleFont(s.vfont)
     setElementRefs()
     createMarkdownButton()
-    createMarkdownEditor(settings)
+    createMarkdownEditor(s)
+    setDebouncedEvents()
     resetElementsBehavior()
     initMarkdownText()
-
-    syncDuration = !isNaN(parseInt(settings.vsync))
-      ? parseInt(settings.vsync)
-      : syncDuration
-    saveDuration = !isNaN(parseInt(settings.vsave))
-      ? parseInt(settings.vsave)
-      : saveDuration
   })
 }
 
@@ -196,7 +196,7 @@ function start() {
   document.addEventListener('readystatechange', event => {
     if (event.target.readyState === 'complete') {
       const callback = (mRecord, mObserver) => {
-        if (document.querySelector('#postingHtmlBox')) {
+        if (document.querySelector('#postingHtmlBox') && chrome.storage) {
           start()
           mObserver.disconnect()
         }
