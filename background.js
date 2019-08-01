@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener(() => {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostEquals: 'www.blogger.com', schemes: ['https'] },
+            pageUrl: { urlMatches: '(www|draft).blogger.com' },
           }),
         ],
         actions: [new chrome.declarativeContent.ShowPageAction()],

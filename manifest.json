@@ -10,14 +10,14 @@
     "128": "images/icon128.png"
   },
   "permissions": [
-    "https://www.blogger.com/",
+    "https://*.blogger.com/",
     "declarativeContent",
     "storage",
     "tabs"
   ],
   "content_scripts": [
     {
-      "matches": ["https://www.blogger.com/*"],
+      "matches": ["https://*.blogger.com/*"],
       "js": ["showdown.min.js", "script.js"]
     }
   ],
