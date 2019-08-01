@@ -34,8 +34,8 @@ function loadGoogleFont(_font) {
 }
 
 function setElementRefs() {
-  btnCompose = document.querySelectorAll('span.tabs span button')[0]
-  btnHtml = document.querySelectorAll('span.tabs span button')[1]
+  btnCompose = document.querySelectorAll('span.tabs button')[0]
+  btnHtml = document.querySelectorAll('span.tabs button')[1]
   btnSave = document.querySelectorAll('form button.blogg-button')[2]
   editorComposeW = document.querySelector('div.composeBoxWrapper')
   editorHtmlW = document.querySelector('div.htmlBoxWrapper')
@@ -67,7 +67,6 @@ function createMarkdownEditor(settings) {
   editorComposeW.insertAdjacentHTML('afterend', ed.outerHTML)
 
   const et = document.createElement('textarea')
-  et.innerText = ''
   const f = settings.vfont.split(':')
   const fontFamily = f[0] || 'Sarabun'
   const fontWeight = f[1] || 400
